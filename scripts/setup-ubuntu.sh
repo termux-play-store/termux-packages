@@ -98,6 +98,7 @@ PACKAGES+=" libdbus-1-dev"
 
 # Needed by package below.
 PACKAGES+=" clang-15"
+PACKAGES+=" llvm-15-dev"
 PACKAGES+=" libelf-dev"
 
 # Needed by package ghostscript.
@@ -148,9 +149,6 @@ PACKAGES+=" composer"
 
 # Needed by package rust.
 PACKAGES+=" libssl-dev" # Needed to build Rust
-PACKAGES+=" llvm-14-dev"
-PACKAGES+=" llvm-14-tools"
-PACKAGES+=" clang-14"
 
 # Needed for package smalltalk.
 PACKAGES+=" libsigsegv-dev"
@@ -164,9 +162,6 @@ PACKAGES+=" openssl"
 PACKAGES+=" zlib1g-dev"
 PACKAGES+=" libssl-dev:i386"
 PACKAGES+=" zlib1g-dev:i386"
-
-# For swift.
-PACKAGES+=" lld"
 
 # Needed by wrk.
 PACKAGES+=" luajit"
