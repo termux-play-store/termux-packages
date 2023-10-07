@@ -31,5 +31,10 @@ jobs:
         python-version: '3.10'
     - name: Run buildorder tests
       run: ./scripts/test_buildorder.py
+    - name: Check consistency with black
+      uses: psf/black@stable
+      with:
+        options: "--check --verbose"
+        src: "./src/buildorder.py src/test_buildorder.py"
     - name: Check buildorder
       run: ./scripts/buildorder.py

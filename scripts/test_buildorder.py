@@ -14,12 +14,12 @@ class BuildorderTest(unittest.TestCase):
         with open(f"{tmpdir}/mypackage/build.sh", "w") as f:
             f.write('TERMUX_PKG_DEPENDS="liba, libb"')
         pkg = buildorder.TermuxPackage(pkg_dir)
-        self.assertEqual(pkg.name, 'mypackage')
-        self.assertEqual(pkg.deps, set(['liba', 'libb']))
+        self.assertEqual(pkg.name, "mypackage")
+        self.assertEqual(pkg.deps, set(["liba", "libb"]))
 
     def test_lower(self):
-        self.assertEqual('foo'.upper(), 'FOO')
+        self.assertEqual("foo".upper(), "FOO")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
