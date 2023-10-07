@@ -9,12 +9,14 @@ on:
     - 'root-packages/**'
     - 'x11-packages/**'
     - 'scripts/buildorder.py'
+    - 'scripts/test_buildorder.py'
   pull_request:
     paths:
     - 'packages/**'
     - 'root-packages/**'
     - 'x11-packages/**'
     - 'scripts/buildorder.py'
+    - 'scripts/test_buildorder.py'
   workflow_dispatch:
 
 permissions: {}
