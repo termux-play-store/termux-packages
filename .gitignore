@@ -30,3 +30,6 @@ scripts/*.log
 
 # Temp .git directories for packages built from local sources "file://"
 /*.git
+
+# Directories created by python when a module is imported
+__pycache__/
