@@ -6,15 +6,22 @@ import os
 import buildorder
 
 
+def setup_test_packages():
+    tmpdir = tempfile.mkdtemp()
+
+    pkg_dir = f"{tmpdir}/firstpackage"
+    os.mkdir(pkg_dir)
+    with open(f"{tmpdir}/firstpackage/build.sh", "w") as f:
+        f.write('TERMUX_PKG_DEPENDS="liba, libb"')
+
+    return tmpdir
+
+
 class BuildorderTest(unittest.TestCase):
     def test_parse_build_file_dependencies(self):
-        tmpdir = tempfile.mkdtemp()
-        pkg_dir = f"{tmpdir}/mypackage"
-        os.mkdir(pkg_dir)
-        with open(f"{tmpdir}/mypackage/build.sh", "w") as f:
-            f.write('TERMUX_PKG_DEPENDS="liba, libb"')
-        pkg = buildorder.TermuxPackage(pkg_dir)
-        self.assertEqual(pkg.name, "mypackage")
+        tmpdir = setup_test_packages()
+        pkg = buildorder.TermuxPackage(f"{tmpdir}/firstpackage")
+        self.assertEqual(pkg.name, "firstpackage")
         self.assertEqual(pkg.deps, set(["liba", "libb"]))
 
     def test_lower(self):
