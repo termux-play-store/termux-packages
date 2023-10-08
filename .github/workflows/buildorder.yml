@@ -37,6 +37,6 @@ jobs:
       uses: psf/black@stable
       with:
         options: "--check --verbose"
-        src: "./src/buildorder.py src/test_buildorder.py"
+        src: "scripts/buildorder.py scripts/test_buildorder.py"
     - name: Check buildorder
       run: ./scripts/buildorder.py
