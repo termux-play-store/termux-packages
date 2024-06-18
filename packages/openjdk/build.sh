@@ -1,17 +1,17 @@
-TERMUX_PKG_HOMEPAGE=https://github.com/openjdk/mobile
+TERMUX_PKG_HOMEPAGE=https://github.com/openjdk/jdk21u
 TERMUX_PKG_DESCRIPTION="Java development kit and runtime"
 TERMUX_PKG_LICENSE="GPL-2.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=21.0
-TERMUX_PKG_REVISION=2
-TERMUX_PKG_SRCURL=git+https://github.com/termux/openjdk-mobile-termux
-TERMUX_PKG_GIT_BRANCH=termux/jdk-21
-TERMUX_PKG_DEPENDS="libiconv, libjpeg-turbo, zlib, libandroid-shmem"
+TERMUX_PKG_VERSION=21.0.4+5
+TERMUX_PKG_SRCURL=https://github.com/openjdk/jdk21u/archive/refs/tags/jdk-${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=7dce384597c955c199930c2c678bbac4cb744608603d31ef4aa0743dbb39ce7a
+TERMUX_PKG_DEPENDS="libjpeg-turbo, zlib, libandroid-shmem"
 TERMUX_PKG_BUILD_DEPENDS="cups, fontconfig, giflib, libpng, libx11, libxrender, libxext, libxtst, libxrandr"
 TERMUX_PKG_RECOMMENDS="ca-certificates-java, resolv-conf"
 TERMUX_PKG_SUGGESTS="cups"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_HAS_DEBUG=false
+TERMUX_PKG_API_LEVEL=31
 
 termux_step_pre_configure() {
 	unset JAVA_HOME

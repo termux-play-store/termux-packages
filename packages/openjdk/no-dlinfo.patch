@@ -1,0 +1,22 @@
+diff -u -r ../jdk21u-jdk-21.0.4-5/src/hotspot/os/linux/os_linux.cpp ./src/hotspot/os/linux/os_linux.cpp
+--- ../jdk21u-jdk-21.0.4-5/src/hotspot/os/linux/os_linux.cpp	2024-05-29 06:56:33.000000000 +0000
++++ ./src/hotspot/os/linux/os_linux.cpp	2024-06-17 06:53:13.119972739 +0000
+@@ -1854,6 +1858,10 @@
+ }
+ 
+ const char* os::Linux::dll_path(void* lib) {
++#ifdef __ANDROID__
++  // Android does not have dlinfo().
++  return "<not available>";
++#else
+   struct link_map *lmap;
+   const char* l_path = nullptr;
+   assert(lib != nullptr, "dll_path parameter must not be null");
+@@ -1863,6 +1871,7 @@
+     l_path = lmap->l_name;
+   }
+   return l_path;
++#endif
+ }
+ 
+ static unsigned count_newlines(const char* s) {

@@ -1,0 +1,14 @@
+From https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=274109
+
+diff -u -r ../jdk21u-jdk-21.0.4-5/make/hotspot/lib/JvmMapfile.gmk ./make/hotspot/lib/JvmMapfile.gmk
+--- ../jdk21u-jdk-21.0.4-5/make/hotspot/lib/JvmMapfile.gmk	2024-05-29 06:56:33.000000000 +0000
++++ ./make/hotspot/lib/JvmMapfile.gmk	2024-06-18 04:29:49.127083081 +0000
+@@ -53,7 +53,7 @@
+ # platform dependent.
+ 
+ ifeq ($(call isTargetOs, linux), true)
+-  DUMP_SYMBOLS_CMD := $(NM) $(NMFLAGS) --defined-only *$(OBJ_SUFFIX)
++  DUMP_SYMBOLS_CMD := $(NM) $(NMFLAGS) --extern-only --defined-only *$(OBJ_SUFFIX)
+   ifneq ($(FILTER_SYMBOLS_PATTERN), )
+     FILTER_SYMBOLS_PATTERN := $(FILTER_SYMBOLS_PATTERN)|
+   endif
