@@ -1,0 +1,9 @@
+diff -u -r ../cache/play-audio-include-string-h/Makefile ./Makefile
+--- ../cache/play-audio-include-string-h/Makefile	2024-05-14 22:26:49.000000000 +0000
++++ ./Makefile	2025-09-13 16:15:48.108518003 +0000
+@@ -1,4 +1,4 @@
+-CXXFLAGS += -Wall -Wextra -Werror -std=c++14 -fno-exceptions
++CXXFLAGS += -Wall -Wextra -std=c++14 -fno-exceptions
+ LDFLAGS += -lOpenSLES
+ PREFIX ?= /usr/local
+ 
