@@ -138,6 +138,7 @@ termux_setup_toolchain_28c() {
 	elif [ "$TERMUX_ARCH" = "i686" ]; then
 		_NDK_ARCHNAME=x86
 	fi
+	cp $NDK/source.properties $_TERMUX_TOOLCHAIN_TMPDIR
 	cp $NDK/toolchains/llvm/prebuilt/linux-x86_64 $_TERMUX_TOOLCHAIN_TMPDIR -r
 
 	for HOST_PLAT in aarch64-linux-android armv7a-linux-androideabi i686-linux-android x86_64-linux-android; do
