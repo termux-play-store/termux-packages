@@ -2,11 +2,11 @@ TERMUX_PKG_HOMEPAGE=https://packages.debian.org/libapt-pkg-perl
 TERMUX_PKG_DESCRIPTION="Perl interface to APT's libapt-pkg"
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION=0.1.40
-TERMUX_PKG_REVISION=13
-TERMUX_PKG_SRCURL=http://deb.debian.org/debian/pool/main/liba/libapt-pkg-perl/libapt-pkg-perl_${TERMUX_PKG_VERSION}.tar.xz
-TERMUX_PKG_SHA256=524d2ef77f3d6896c50e7674022d85e4a391a6a2b3c65ba5e50ac671fa7ce4a1
-TERMUX_PKG_DEPENDS="apt, libc++, perl"
+TERMUX_PKG_VERSION=0.1.42
+# old tarballs are removed from http://deb.debian.org/debian/pool/main/liba/libapt-pkg-perl/libapt-pkg-perl_${TERMUX_PKG_VERSION}.tar.xz
+TERMUX_PKG_SRCURL=https://salsa.debian.org/bod/libapt-pkg-perl/-/archive/v${TERMUX_PKG_VERSION}/libapt-pkg-perl-v${TERMUX_PKG_VERSION}.tar.gz
+TERMUX_PKG_SHA256=28c0688c3807912d372ef1bed2a490526704f902211bc916d49ec420a48d2ee3
+TERMUX_PKG_DEPENDS="apt (>= 3.0.0), libc++, perl"
 TERMUX_PKG_BUILD_IN_SRC=true
 
 
