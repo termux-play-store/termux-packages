@@ -3,10 +3,9 @@ TERMUX_PKG_DESCRIPTION="Ambitious Vim-fork focused on extensibility and agility 
 TERMUX_PKG_LICENSE="Apache-2.0, VIM License"
 TERMUX_PKG_LICENSE_FILE="LICENSE.txt"
 TERMUX_PKG_MAINTAINER="Joshua Kahn @TomJo2000"
-TERMUX_PKG_VERSION="0.11.4"
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_VERSION="0.11.5"
 TERMUX_PKG_SRCURL=https://github.com/neovim/neovim/archive/v${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=83cf9543bedab8bec8c11cd50ccd9a4bf1570420a914b9a28f83ad100ca6d524
+TERMUX_PKG_SHA256=c63450dfb42bb0115cd5e959f81c77989e1c8fd020d5e3f1e6d897154ce8b771
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_UPDATE_VERSION_REGEXP="^\d+\.\d+\.\d+$"
 TERMUX_PKG_DEPENDS="libiconv, libuv, luv, libmsgpack, libvterm (>= 1:0.3-0), libluajit, libunibilium, libandroid-support, lua51-lpeg, tree-sitter, tree-sitter-parsers, utf8proc"
@@ -51,13 +50,13 @@ termux_step_host_build() {
 	export TERMUX_ORIGINAL_CMAKE="$TERMUX_ORIGINAL_CMAKE.orig"
 
 	mkdir -p "$TERMUX_PKG_HOSTBUILD_DIR/deps"
-	cd "$TERMUX_PKG_HOSTBUILD_DIR/deps" || termux_error_exit "Error: failed to perform host build for nvim"
+	cd "$TERMUX_PKG_HOSTBUILD_DIR/deps" || termux_error_exit "failed to perform host build for nvim"
 	cmake "$TERMUX_PKG_SRCDIR/cmake.deps"
 
 	make -j 1 \
 		|| (_patch_luv "$TERMUX_PKG_HOSTBUILD_DIR/deps" && make -j 1)
 
-	cd "$TERMUX_PKG_SRCDIR" || termux_error_exit "Error: failed to perform host build for nvim"
+	cd "$TERMUX_PKG_SRCDIR" || termux_error_exit "failed to perform host build for nvim"
 
 	make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=$TERMUX_PKG_HOSTBUILD_DIR -DUSE_BUNDLED_LUAROCKS=ON" install ||
 		(_patch_luv "$TERMUX_PKG_SRCDIR/.deps" && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=$TERMUX_PKG_HOSTBUILD_DIR -DUSE_BUNDLED_LUAROCKS=ON" install)
@@ -69,7 +68,7 @@ termux_step_host_build() {
 	make distclean
 	rm -Rf build/
 
-	cd "$TERMUX_PKG_HOSTBUILD_DIR" || termux_error_exit "Error: failed to perform host build for nvim"
+	cd "$TERMUX_PKG_HOSTBUILD_DIR" || termux_error_exit "failed to perform host build for nvim"
 }
 
 termux_step_pre_configure() {

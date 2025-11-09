@@ -2,7 +2,7 @@ TERMUX_PKG_HOMEPAGE=https://emscripten.org
 TERMUX_PKG_DESCRIPTION="Emscripten: An LLVM-to-WebAssembly Compiler"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="4.0.16"
+TERMUX_PKG_VERSION="4.0.18"
 TERMUX_PKG_SRCURL=git+https://github.com/emscripten-core/emscripten
 TERMUX_PKG_GIT_BRANCH=${TERMUX_PKG_VERSION}
 TERMUX_PKG_DEPENDS="nodejs-lts | nodejs, python"
@@ -55,13 +55,13 @@ opt/emscripten/LICENSE
 
 # https://github.com/emscripten-core/emscripten/issues/11362
 # can switch to stable LLVM to save space once above is fixed
-_LLVM_COMMIT=375f48942b9a3f3fbd82133390af25b6c96f1460
-_LLVM_TGZ_SHA256=4b874fd3a2abc8115786d90de8ab8e087eec0b23cd7016373cccabc265dc8f70
+_LLVM_COMMIT=d87200e8ca2a2c593baea2e113b90bf43409b534
+_LLVM_TGZ_SHA256=1092d0490451f72a8ee27acfab660f32ad2e56899120e6af1f58e1208a08d40d
 
 # https://github.com/emscripten-core/emscripten/issues/12252
 # upstream says better bundle the right binaryen revision for now
-_BINARYEN_COMMIT=4201437a34698649abe8863270e17aba9d6df8eb
-_BINARYEN_TGZ_SHA256=6bea2de2dc30332f608cfb6d94eab31871dcedee0a9166f738b148a34440949f
+_BINARYEN_COMMIT=4162cc858477f7cbe2902a7bb6dd88e7471c5d4d
+_BINARYEN_TGZ_SHA256=fb8276a2ec816fa204a285659266a4d9aa7233a61b0d83e144c9fd638903e934
 
 # https://github.com/emscripten-core/emsdk/blob/main/emsdk.py
 # https://chromium.googlesource.com/emscripten-releases/+/refs/heads/main/src/build.py
@@ -113,7 +113,7 @@ termux_pkg_auto_update() {
 	latest_tag=$(termux_github_api_get_tag "${TERMUX_PKG_SRCURL}" "${TERMUX_PKG_UPDATE_TAG_TYPE}")
 
 	if [[ -z "${latest_tag}" ]]; then
-		termux_error_exit "ERROR: Unable to get tag from ${TERMUX_PKG_SRCURL}"
+		termux_error_exit "Unable to get tag from ${TERMUX_PKG_SRCURL}"
 	fi
 
 	if [[ "${latest_tag}" == "${TERMUX_PKG_VERSION}" ]]; then

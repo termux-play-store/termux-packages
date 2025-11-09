@@ -43,12 +43,3 @@ diff -u -r ./generate-db.js ../../src/generate-db.js
  
    // Stores mappings of binary names to package names
    // The key is the binary name, and the value is an array of package names
-@@ -208,7 +204,7 @@
- 
-         const packageName = fileMap.get(join(TERMUX_PREFIX.substring(1), path));
-         if (packageName === undefined) {
--          console.error(`Package name not found for path: ${path}`);
-+          console.error(`Package name not found for path: ${path} (resolved to): ` + join(TERMUX_PREFIX.substring(1), path) + ", command=" + command);
-           process.exit(1);
-         }
-         if (!binMap.has(packageName)) {

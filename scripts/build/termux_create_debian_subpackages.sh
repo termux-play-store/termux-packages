@@ -131,7 +131,6 @@ termux_create_debian_subpackages() {
 		[[ -n "$TERMUX_SUBPKG_REPLACES"         ]] && echo "Replaces: $TERMUX_SUBPKG_REPLACES"
 		[[ -n "$TERMUX_SUBPKG_PROVIDES"         ]] && echo "Provides: $TERMUX_SUBPKG_PROVIDES"
 		[[ -n "$TERMUX_SUBPKG_SUGGESTS"         ]] && echo "Suggests: $TERMUX_SUBPKG_SUGGESTS"
-		[[ -n "$TERMUX_PKG_REPO_METADATA"       ]] && echo "Termux-Repo: $TERMUX_PKG_REPO_METADATA"
 		echo "Description: $TERMUX_SUBPKG_DESCRIPTION"
 		} >> control
 

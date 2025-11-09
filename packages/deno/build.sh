@@ -2,18 +2,12 @@ TERMUX_PKG_HOMEPAGE=https://deno.land/
 TERMUX_PKG_DESCRIPTION="A modern runtime for JavaScript and TypeScript"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@licy183"
-TERMUX_PKG_VERSION=1:2.5.4
-TERMUX_PKG_SRCURL=(
-	https://github.com/denoland/deno/releases/download/v${TERMUX_PKG_VERSION:2}/deno_src.tar.gz
-	https://github.com/termux/deno-snapshot/releases/download/v${TERMUX_PKG_VERSION:2}/deno-snapshot-aarch64-linux-android-${TERMUX_PKG_VERSION:2}.tar.bz2
-	https://github.com/termux/deno-snapshot/releases/download/v${TERMUX_PKG_VERSION:2}/deno-snapshot-x86_64-linux-android-${TERMUX_PKG_VERSION:2}.tar.bz2
-)
-TERMUX_PKG_SHA256=(
-	d92d0c2b85f016769dcc2f0b86ae03861d2303bb165aac4c7911559c052301ca
-	d77522c04c9ffa8b88ba70a87d90b6dbe4892fcc5b42f6af37397233993b8ea4
-	44948563e985fee3b8277da80fbe018f0df33df332e6755224f871ccc4de9053
-)
+TERMUX_PKG_VERSION="1:2.5.6"
+TERMUX_PKG_REVISION=2
+TERMUX_PKG_SRCURL=https://github.com/denoland/deno/releases/download/v${TERMUX_PKG_VERSION:2}/deno_src.tar.gz
+TERMUX_PKG_SHA256=62d3e8f87aed734cdce27660ebfed1c31b6b279f21f36070cdc64e828ae3bfb0
 TERMUX_PKG_DEPENDS="libandroid-stub, libffi, libsqlite, zlib"
+TERMUX_PKG_BUILD_DEPENDS="aosp-libs"
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_NO_STATICSPLIT=true
 TERMUX_PKG_AUTO_UPDATE=true
@@ -25,27 +19,18 @@ TERMUX_PKG_EXCLUDED_ARCHES="i686, arm"
 
 termux_step_get_source() {
 	# XXX: Add version to the name of deno src tarball
-	local _target_name=(
-		"deno_src-${TERMUX_PKG_VERSION:2}.tar.gz"
-		"deno-snapshot-aarch64-linux-android-${TERMUX_PKG_VERSION:2}.tar.bz2"
-		"deno-snapshot-x86_64-linux-android-${TERMUX_PKG_VERSION:2}.tar.bz2"
-	)
-	local _target_path=(
-		"$TERMUX_PKG_SRCDIR"
-		"$TERMUX_PKG_SRCDIR/deno-snapshot-aarch64-linux-android-${TERMUX_PKG_VERSION:2}"
-		"$TERMUX_PKG_SRCDIR/deno-snapshot-x86_64-linux-android-${TERMUX_PKG_VERSION:2}"
-	)
-	local i=0
-	for i in $(seq 0 $(( ${#TERMUX_PKG_SRCURL[@]}-1 ))); do
-		local file="$TERMUX_PKG_CACHEDIR"/"${_target_name[$i]}"
-		local path="${_target_path[$i]}"
-		termux_download "${TERMUX_PKG_SRCURL[$i]}" "$file" "${TERMUX_PKG_SHA256[$i]}"
-		mkdir -p "$path"
-		tar xf "$file" -C "$path" --strip-components=1
-	done
+	local file="$TERMUX_PKG_CACHEDIR/deno_src-${TERMUX_PKG_VERSION:2}.tar.gz"
+	termux_download "${TERMUX_PKG_SRCURL}" "$file" "${TERMUX_PKG_SHA256}"
+	mkdir -p "$TERMUX_PKG_SRCDIR"
+	tar xf "$file" -C "$TERMUX_PKG_SRCDIR" --strip-components=1
 }
 
 termux_step_pre_configure() {
+	# Backup source of deno_snapshots
+	mv "$TERMUX_PKG_SRCDIR"/cli/snapshot "$TERMUX_PKG_TMPDIR"/snapshot.orig
+	mkdir -p "$TERMUX_PKG_SRCDIR"/cli/snapshot
+	cp -Rf "$TERMUX_PKG_TMPDIR"/snapshot.orig/* "$TERMUX_PKG_SRCDIR"/cli/snapshot/
+
 	termux_setup_rust
 
 	: "${CARGO_HOME:=$HOME/.cargo}"
@@ -138,7 +123,7 @@ use_jumbo_build=true
 
 	export V8_FROM_SOURCE=1
 	# TODO: How to track the output of v8's build.rs without passing `-vv`
-	cargo build --jobs "${TERMUX_PKG_MAKE_PROCESSES}" --target "${CARGO_TARGET_NAME}" --release -vv
+	cargo build --jobs "${TERMUX_PKG_MAKE_PROCESSES}" --target "${CARGO_TARGET_NAME}" --release
 
 	unset BINDGEN_EXTRA_CLANG_ARGS "$env_name" V8_FROM_SOURCE
 	touch "$__SRC_DIR"/.built
@@ -212,7 +197,6 @@ termux_step_make() {
 	export RUSTY_V8_ARCHIVE_${env_name}="${TERMUX_PREFIX}/lib/librusty_v8.a"
 	export RUSTY_V8_SRC_BINDING_PATH_${env_name}="${TERMUX_PREFIX}/include/librusty_v8/src_binding.rs"
 	export DENO_SKIP_CROSS_BUILD_CHECK=1
-	export DENO_PREBUILT_CLI_SNAPSHOT="$TERMUX_PKG_SRCDIR/deno-snapshot-$CARGO_TARGET_NAME-${TERMUX_PKG_VERSION:2}/CLI_SNAPSHOT.bin"
 
 	if [[ "${TERMUX_ON_DEVICE_BUILD}" == "false" ]]; then
 		export PKG_CONFIG_x86_64_unknown_linux_gnu=/usr/bin/pkg-config
@@ -228,6 +212,37 @@ termux_step_make() {
 	if [ "$TERMUX_DEBUG_BUILD" = "true" ]; then
 		_release_opt=
 	fi
+
+	# Prepare source to build cli snapshot generator
+	rm -rf "$TERMUX_PKG_SRCDIR"/cli/snapshot/*
+	mkdir -p "$TERMUX_PKG_SRCDIR"/cli/snapshot/src
+	cp -f "$TERMUX_PKG_TMPDIR"/snapshot.orig/Cargo.toml "$TERMUX_PKG_SRCDIR"/cli/snapshot/
+	cp -f "$TERMUX_PKG_TMPDIR"/snapshot.orig/build.rs "$TERMUX_PKG_SRCDIR"/cli/snapshot/src/main.rs
+	cp -f "$TERMUX_PKG_TMPDIR"/snapshot.orig/shared.rs "$TERMUX_PKG_SRCDIR"/cli/snapshot/src/shared.rs
+	patch --silent -p1 \
+		-d "$TERMUX_PKG_SRCDIR" \
+		< "$TERMUX_PKG_BUILDER_DIR"/deno-snapshot-build-generator.diff
+
+	# Build cli snapshot generator
+	cargo build ${_release_opt} \
+		--jobs "${TERMUX_PKG_MAKE_PROCESSES}" \
+		--target "${CARGO_TARGET_NAME}"  \
+		--manifest-path ./cli/snapshot/Cargo.toml
+
+	# Generate cli snapshot
+	local _deno_prebuilt_snapshot_dir="$TERMUX_PKG_TMPDIR/deno-snapshot-$CARGO_TARGET_NAME-${TERMUX_PKG_VERSION:2}"
+	mkdir -p "$_deno_prebuilt_snapshot_dir"
+	termux_setup_proot
+	termux-proot-run env LD_PRELOAD= LD_LIBRARY_PATH= \
+		OUT_DIR="$_deno_prebuilt_snapshot_dir" TARGET="$CARGO_TARGET_NAME" \
+		"$TERMUX_PKG_SRCDIR"/target/$CARGO_TARGET_NAME/release/deno_snapshots
+
+	# Recover source
+	rm -rf "$TERMUX_PKG_SRCDIR"/cli/snapshot/*
+	cp -Rf "$TERMUX_PKG_TMPDIR"/snapshot.orig/* "$TERMUX_PKG_SRCDIR"/cli/snapshot/
+
+	# Build deno
+	export DENO_PREBUILT_CLI_SNAPSHOT="$_deno_prebuilt_snapshot_dir/CLI_SNAPSHOT.bin"
 	cargo build --jobs "${TERMUX_PKG_MAKE_PROCESSES}" --target "${CARGO_TARGET_NAME}" ${_release_opt}
 }
 

@@ -113,6 +113,7 @@ def parse_build_file_variable_bool(path, var):
 
 class TermuxPackage(object):
     deps: Set[str]
+    # subpkgs: [TermuxSubPackage]
 
     "A main package definition represented by a directory with a build.sh file."
     def __init__(self, dir_path):
@@ -128,8 +129,6 @@ class TermuxPackage(object):
         self.deps = parse_build_file_dependencies(build_sh_path)
         self.antideps = parse_build_file_antidependencies(build_sh_path)
         self.excluded_arches = parse_build_file_excluded_arches(build_sh_path)
-        self.separate_subdeps = parse_build_file_variable_bool(build_sh_path, 'TERMUX_PKG_SEPARATE_SUB_DEPENDS')
-        self.accept_dep_scr = parse_build_file_variable_bool(build_sh_path, 'TERMUX_PKG_ACCEPT_PKG_IN_DEP')
 
         if os.getenv('TERMUX_ON_DEVICE_BUILD') == "true":
             always_deps = ['libc++']
@@ -139,7 +138,6 @@ class TermuxPackage(object):
 
         # search subpackages
         self.subpkgs = []
-
         for filename in os.listdir(self.dir):
             if not filename.endswith('.subpackage.sh'):
                 continue
@@ -157,34 +155,33 @@ class TermuxPackage(object):
     def __repr__(self):
         return "<{} '{}'>".format(self.__class__.__name__, self.name)
 
-    def recursive_dependencies(self, pkgs_map, dir_root=None):
+    def recursive_dependencies(self, pkgs_map, is_root=False):
         "All the dependencies of the package, both direct and indirect."
         result = []
-        is_root = dir_root == None
+
+        for subpkg in self.subpkgs:
+            if f"{self.name}-static" != subpkg.name:
+                # self.deps.add(subpkg.name)
+                self.deps |= subpkg.deps
+
+        self.deps -= self.antideps
+        self.deps.discard(self.name)
+
         if is_root:
-            dir_root = self.dir
-        if is_root or not self.separate_subdeps:
-            for subpkg in self.subpkgs:
-                if f"{self.name}-static" != subpkg.name:
-                    # self.deps.add(subpkg.name)
-                    self.deps |= subpkg.deps
-            self.deps -= self.antideps
-            self.deps.discard(self.name)
-            if self.dir == dir_root:
-                self.deps.difference_update([subpkg.name for subpkg in self.subpkgs])
+            # XXX: Do what buildorder.py effectively does in termux/termux-packages:
+            for dep_name in list(self.deps):
+                dep_pkg = pkgs_map[dep_name]
+                if isinstance(dep_pkg, TermuxPackage):
+                    for dep_subpkg in dep_pkg.subpkgs:
+                        if not dep_subpkg.name.endswith('-static'):
+                            self.deps.add(dep_subpkg.name)
+
         for dependency_name in sorted(self.deps):
             if dependency_name not in self.pkgs_cache:
                 self.pkgs_cache.append(dependency_name)
                 dependency_package = pkgs_map[dependency_name]
-                result += dependency_package.recursive_dependencies(pkgs_map, dir_root)
-                if dependency_package.accept_dep_scr or dependency_package.dir != dir_root:
-                    result += [dependency_package]
-
-                # Add -cross- subpackages:
-                if isinstance(dependency_package, TermuxPackage):
-                    for s in dependency_package.subpkgs:
-                        if '-cross' in s.name:
-                            result += [s]
+                result += [dependency_package]
+                result += dependency_package.recursive_dependencies(pkgs_map)
 
         return unique_everseen(result)
 
@@ -197,7 +194,6 @@ class TermuxSubPackage:
         self.name = os.path.basename(subpackage_file_path).split('.subpackage.sh')[0]
         self.parent = parent
         self.deps = set([parent.name]) if virtual else set()
-        self.accept_dep_scr = parent.accept_dep_scr
         self.excluded_arches = set()
         if not virtual:
             self.deps |= parse_build_file_dependencies(subpackage_file_path, parent_pkg=parent)
@@ -209,20 +205,17 @@ class TermuxSubPackage:
     def __repr__(self):
         return "<{} '{}' parent='{}'>".format(self.__class__.__name__, self.name, self.parent)
 
-    def recursive_dependencies(self, pkgs_map, dir_root=None):
+    def recursive_dependencies(self, pkgs_map):
         """All the dependencies of the subpackage, both direct and indirect.
         Only relevant when building in fast-build mode"""
         result = []
-        if dir_root == None:
-            dir_root = self.dir
         for dependency_name in sorted(self.deps):
             if dependency_name == self.parent.name:
                 self.parent.deps.discard(self.name)
             dependency_package = pkgs_map[dependency_name]
             if dependency_package not in self.parent.subpkgs:
-                result += dependency_package.recursive_dependencies(pkgs_map, dir_root=dir_root)
-            if dependency_package.accept_dep_scr or dependency_package.dir != dir_root:
-                result += [dependency_package]
+                result += dependency_package.recursive_dependencies(pkgs_map)
+            result += [dependency_package]
         return unique_everseen(result)
 
 def read_packages_from_directories(directories, full_buildmode):
@@ -412,7 +405,7 @@ def generate_target_buildorder(target_path, pkgs_map):
     package = pkgs_map[package_name]
     # Do not depend on any sub package
     package.deps.difference_update([subpkg.name for subpkg in package.subpkgs])
-    return package.recursive_dependencies(pkgs_map)
+    return package.recursive_dependencies(pkgs_map, is_root=True)
 
 def main():
     "Generate the build order either for all packages or a specific one."

@@ -33,7 +33,6 @@ termux_step_create_debian_package() {
 	test ! -z "$TERMUX_PKG_REPLACES" && echo "Replaces: $TERMUX_PKG_REPLACES" >> DEBIAN/control
 	test ! -z "$TERMUX_PKG_PROVIDES" && echo "Provides: $TERMUX_PKG_PROVIDES" >> DEBIAN/control
 	test ! -z "$TERMUX_PKG_SUGGESTS" && echo "Suggests: $TERMUX_PKG_SUGGESTS" >> DEBIAN/control
-	test ! -z "$TERMUX_PKG_REPO_METADATA" && echo "Termux-Repo: $TERMUX_PKG_REPO_METADATA" >> DEBIAN/control
 	echo "Description: $TERMUX_PKG_DESCRIPTION" >> DEBIAN/control
 
 	# Create DEBIAN/conffiles (see https://www.debian.org/doc/debian-policy/ap-pkg-conffiles.html):

@@ -6,6 +6,7 @@ TERMUX_PKG_MAINTAINER="@termux"
 # when bumping version.
 TERMUX_PKG_VERSION="1:1.89.0"
 _VERSION="${TERMUX_PKG_VERSION:2}"
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL="https://archives.boost.io/release/${_VERSION}/source/boost_${_VERSION//./_}.tar.bz2"
 TERMUX_PKG_SHA256=85a33fa22621b4f314f8e85e1a5e2a9363d22e4f4992925d4bb3bc631b5a0c7a
 TERMUX_PKG_AUTO_UPDATE=false

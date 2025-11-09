@@ -20,7 +20,7 @@ termux_step_get_dependencies() {
 		# llvm doesn't build if ndk-sysroot is installed:
 		if [ "$PKG" = "ndk-sysroot" ]; then continue; fi
 
-		read DEP_ARCH DEP_VERSION <<< $(termux_extract_dep_info $PKG "${PKG_DIR}")
+		read DEP_ARCH DEP_VERSION UNUSED UNUSED <<< $(termux_extract_dep_info $PKG "${PKG_DIR}")
 
 		local can_build_locally=true
 		if [ "$TERMUX_ON_DEVICE_BUILD" = "true" ] && ! termux_package__is_package_on_device_build_supported "$PKG_DIR"; then

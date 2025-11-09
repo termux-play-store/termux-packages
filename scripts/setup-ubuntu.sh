@@ -107,14 +107,14 @@ PACKAGES+=" librsvg2-dev"
 # Needed by package news-flash-gtk.
 PACKAGES+=" libsqlite3-dev"
 
+# Needed by package luarocks.
+PACKAGES+=" lua5.4"
+
 # Needed by package fennel.
 PACKAGES+=" lua5.3"
 
 # Needed by package vlc.
 PACKAGES+=" lua5.2"
-
-# Needed by package luarocks.
-PACKAGES+=" lua5.1"
 
 # Used bt host build of package mariadb.
 PACKAGES+=" libncurses5-dev"
@@ -208,7 +208,6 @@ PACKAGES+=" libunistring-dev"
 
 # Needed by packages in X11 repository.
 PACKAGES+=" alex"
-PACKAGES+=" blueprint-compiler"
 PACKAGES+=" docbook-xsl-ns"
 PACKAGES+=" gnome-common"
 PACKAGES+=" gobject-introspection"

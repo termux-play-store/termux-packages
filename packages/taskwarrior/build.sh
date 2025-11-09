@@ -2,9 +2,10 @@ TERMUX_PKG_HOMEPAGE=https://taskwarrior.org
 TERMUX_PKG_DESCRIPTION="Utility for managing your TODO list"
 TERMUX_PKG_LICENSE="MIT"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="3.4.1"
+TERMUX_PKG_VERSION="3.4.2"
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://github.com/GothenburgBitFactory/taskwarrior/releases/download/v${TERMUX_PKG_VERSION}/task-${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=23eb60f73e42f16111cc3912b44ee12be6768860a2db2a9c6a47f8ac4786bac3
+TERMUX_PKG_SHA256=d302761fcd1268e4a5a545613a2b68c61abd50c0bcaade3b3e68d728dd02e716
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="libc++, libgnutls, libuuid"
 TERMUX_CMAKE_BUILD="Unix Makefiles"
@@ -16,6 +17,13 @@ termux_step_pre_configure() {
 	CXXFLAGS+=" -Wno-c++11-narrowing"
 	export ANDROID_STANDALONE_TOOLCHAIN="$TERMUX_STANDALONE_TOOLCHAIN"
 	export CARGO_TARGET_$(printf $CARGO_TARGET_NAME | tr a-z A-Z | sed s/-/_/g)_RUSTFLAGS+=" -C linker=$(command -v $CC)"
+
+	export CMAKE_POLICY_VERSION_MINIMUM=3.5
+	export BINDGEN_EXTRA_CLANG_ARGS="--sysroot ${TERMUX_STANDALONE_TOOLCHAIN}/sysroot"
+	case "${TERMUX_ARCH}" in
+	arm) BINDGEN_EXTRA_CLANG_ARGS+=" --target=arm-linux-androideabi -isystem ${TERMUX_STANDALONE_TOOLCHAIN}/include/c++/v1 -isystem ${TERMUX_STANDALONE_TOOLCHAIN}/sysroot/usr/include/arm-linux-androideabi" ;;
+	*) BINDGEN_EXTRA_CLANG_ARGS+=" --target=${TERMUX_ARCH}-linux-android -isystem ${TERMUX_STANDALONE_TOOLCHAIN}/include/c++/v1 -isystem ${TERMUX_STANDALONE_TOOLCHAIN}/sysroot/usr/include/${TERMUX_ARCH}-linux-android" ;;
+	esac
 
 	if [ "$TERMUX_ARCH" = "arm" ]; then
 		# See https://cmake.org/cmake/help/latest/variable/CMAKE_ANDROID_ARM_MODE.html
