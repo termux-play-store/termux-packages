@@ -9,6 +9,8 @@ TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_DEPENDS="alsa-lib, imlib2, libandroid-glob, libandroid-wordexp, libice, librsvg, libsm, libsndfile, libxcomposite, libxcursor, libxdamage, libxinerama, libxrandr, libxres"
 TERMUX_PKG_BUILD_DEPENDS="aosp-libs"
 TERMUX_PKG_SUGGESTS="xdg-menu"
+# Limited by the size of pthread_mutex_t, 32 bit bionic libc only accepts pid <= 65535, but current pid is 1285502:
+TERMUX_PKG_EXCLUDED_ARCHES="arm"
 
 termux_step_pre_configure() {
 	if [[ "$TERMUX_ON_DEVICE_BUILD" == "false" ]]; then
@@ -19,7 +21,7 @@ termux_step_pre_configure() {
 	fi
 
 	CPPFLAGS+=" -DGLOB_NOSYS=-4"
-	LDFLAGS+=" -landroid-glob -landroid-wordexp"
+	LDFLAGS+=" -landroid-glob -landroid-wordexp -Wl,--allow-shlib-undefined"
 
 	# Every instance of '/usr' in the code is replaceable with '$TERMUX_PREFIX'.
 	find "$TERMUX_PKG_SRCDIR" -type f | \

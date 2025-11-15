@@ -11,6 +11,6 @@ TERMUX_PKG_BREAKS="sox-dev"
 TERMUX_PKG_REPLACES="sox-dev"
 
 termux_step_pre_configure() {
-	LDFLAGS+=" -l:libomp.a"
+	LDFLAGS+=" -l:libomp.a -landroid-glob"
 	CPPFLAGS+=" -D_FSTDIO"
 }

@@ -11,4 +11,4 @@ share/vala/vapi/valadoc*
 share/valadoc*
 "
 TERMUX_SUBPKG_DESCRIPTION="API documentation generator for vala"
-TERMUX_SUBPKG_DEPENDS="graphviz"
+# TERMUX_SUBPKG_DEPENDS="graphviz"
