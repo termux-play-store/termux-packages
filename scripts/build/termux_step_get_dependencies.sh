@@ -56,7 +56,7 @@ termux_step_get_dependencies() {
 
 		DEBS_TO_INSTALL+=( "$DEB_FILE_TO_INSTALL" )
 
-	done<<<$(./scripts/buildorder.py "$TERMUX_PKG_BUILDER_DIR" $TERMUX_PACKAGES_DIRECTORIES || echo "ERROR")
+	done<<<$(./scripts/buildorder.py -i "$TERMUX_PKG_BUILDER_DIR" $TERMUX_PACKAGES_DIRECTORIES || echo "ERROR")
 
 	local deb_file
 	for deb_file in "${DEBS_TO_INSTALL[@]}"; do

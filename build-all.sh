@@ -8,7 +8,6 @@ TERMUX_SCRIPTDIR=$(cd "$(realpath "$(dirname "$0")")"; pwd)
 # Store pid of current process in a file for docker__run_docker_exec_trap
 source "$TERMUX_SCRIPTDIR/scripts/utils/docker/docker.sh"; docker__create_docker_exec_pid_file
 
-
 if [ "$(uname -o)" = "Android" ] || [ -e "/system/bin/app_process" ]; then
 	echo "On-device execution of this script is not supported."
 	exit 1
@@ -16,24 +15,31 @@ fi
 
 # Read settings from .termuxrc if existing
 test -f "$HOME"/.termuxrc && . "$HOME"/.termuxrc
-: "${TERMUX_TOPDIR:="$HOME/.termux-build"}"
-: "${TERMUX_ARCH:="aarch64"}"
-: "${TERMUX_INSTALL_DEPS:=""}"
+: ${TERMUX_TOPDIR:="$HOME/.termux-build"}
+: ${TERMUX_ARCH:="aarch64"}
+: ${TERMUX_FORMAT:="debian"}
+: ${TERMUX_DEBUG_BUILD:=""}
+: ${TERMUX_INSTALL_DEPS:="-s"}
+# Set TERMUX_INSTALL_DEPS to -s unless set to -i
 
 _show_usage() {
-	echo "Usage: ./build-all.sh [-a ARCH] [-i] [-o DIR]"
+	echo "Usage: ./build-all.sh [-a ARCH] [-d] [-i] [-o DIR] [-f FORMAT]"
 	echo "Build all packages."
 	echo "  -a The architecture to build for: aarch64(default), arm, i686, x86_64 or all."
-	echo "  -i Install dependencies."
+	echo "  -d Build with debug symbols."
+	echo "  -i Build dependencies."
 	echo "  -o Specify deb directory. Default: debs/."
+	echo "  -f Specify format pkg: debian(default) or pacman."
 	exit 1
 }
 
-while getopts :a:hdio: option; do
+while getopts :a:hdio:f: option; do
 case "$option" in
 	a) TERMUX_ARCH="$OPTARG";;
+	d) TERMUX_DEBUG_BUILD='-d';;
 	i) TERMUX_INSTALL_DEPS='-i';;
 	o) TERMUX_OUTPUT_DIR="$(realpath -m "$OPTARG")";;
+	f) TERMUX_FORMAT="$OPTARG";;
 	h) _show_usage;;
 	*) _show_usage >&2 ;;
 esac
@@ -41,10 +47,15 @@ done
 shift $((OPTIND-1))
 if [ "$#" -ne 0 ]; then _show_usage; fi
 
-if [[ ! "$TERMUX_ARCH" =~ ^(all|aarch64|arm|i686|x86_64)$ ]]; then
-	echo "ERROR: Invalid arch '$TERMUX_ARCH'" 1>&2
-	exit 1
-fi
+case "$TERMUX_ARCH" in
+	all|aarch64|arm|i686|x86_64);;
+	*) echo "ERROR: Invalid arch '$TERMUX_ARCH'" 1>&2; exit 1;;
+esac
+
+case "$TERMUX_FORMAT" in
+	debian|pacman);;
+	*) echo "ERROR: Invalid format '$TERMUX_FORMAT'" 1>&2; exit 1;;
+esac
 
 BUILDSCRIPT=$(dirname "$0")/build-package.sh
 BUILDALL_DIR=$TERMUX_TOPDIR/_buildall-$TERMUX_ARCH
@@ -61,44 +72,35 @@ if [ -e "$BUILDSTATUS_FILE" ]; then
 	echo "Continuing build-all from: $BUILDSTATUS_FILE"
 fi
 
-exec >	>(tee -a "$BUILDALL_DIR"/ALL.out)
-exec 2> >(tee -a "$BUILDALL_DIR"/ALL.err >&2)
-trap 'echo ERROR: See $BUILDALL_DIR/${PKG}.err' ERR
+exec &>	>(tee -a "$BUILDALL_DIR"/ALL.out)
+trap 'echo ERROR: See $BUILDALL_DIR/${PKG}.out' ERR
 
-# Read lines from build order file first before building,
-# so builds reading from stdin cannot interfere.
-PKG_DIRS=()
 while read -r PKG PKG_DIR; do
-	PKG_DIRS+=( "$PKG_DIR" )
-done < "${BUILDORDER_FILE}"
-
-for PKG_DIR in "${PKG_DIRS[@]}"; do
-	PKG=$(basename $PKG_DIR)
 	# Check build status (grepping is a bit crude, but it works)
-	if [ -e "$BUILDSTATUS_FILE" ] && grep "^$PKG\$" "$BUILDSTATUS_FILE" >/dev/null; then
+	if [ -e "$BUILDSTATUS_FILE" ] && grep -q "^$PKG\$" "$BUILDSTATUS_FILE"; then
 		echo "Skipping $PKG"
 		continue
 	fi
 
+	# Start building
+	if [ -n "${TERMUX_DEBUG_BUILD}" ]; then
+		echo "\"$BUILDSCRIPT\" -a \"$TERMUX_ARCH\" $TERMUX_DEBUG_BUILD --format \"$TERMUX_FORMAT\" --library $(test "${PKG_DIR%/*}" = "gpkg" && echo "glibc" || echo "bionic") ${TERMUX_OUTPUT_DIR+-o $TERMUX_OUTPUT_DIR} $TERMUX_INSTALL_DEPS \"$PKG_DIR\""
+	fi
+
 	echo -n "Building $PKG... "
 	BUILD_START=$(date "+%s")
-	STDOUT_TO="$BUILDALL_DIR"/"${PKG}".out
-	STDERR_TO="$BUILDALL_DIR"/"${PKG}".err
-	if [ "$PKG" = "lit" ] || [ "$PKG" = "luvit" ]; then
-		# Work around https://github.com/luvit/lit/issues/292
-		STDERR_TO=/dev/tty
-	fi
-	bash -x "$BUILDSCRIPT" -a "$TERMUX_ARCH" \
+	"$BUILDSCRIPT" -a "$TERMUX_ARCH" $TERMUX_DEBUG_BUILD --format "$TERMUX_FORMAT" \
+		--library $(test "${PKG_DIR%/*}" = "gpkg" && echo "glibc" || echo "bionic") \
 		${TERMUX_OUTPUT_DIR+-o $TERMUX_OUTPUT_DIR} $TERMUX_INSTALL_DEPS "$PKG_DIR" \
-		> "$STDOUT_TO" 2> "$STDERR_TO"
+		&> "$BUILDALL_DIR"/"${PKG}".out
 	BUILD_END=$(date "+%s")
 	BUILD_SECONDS=$(( BUILD_END - BUILD_START ))
-	echo "done in $BUILD_SECONDS"
+	echo "done in $BUILD_SECONDS sec"
 
 	# Update build status
 	echo "$PKG" >> "$BUILDSTATUS_FILE"
-done
+done<"${BUILDORDER_FILE}"
 
 # Update build status
-# rm -f "$BUILDSTATUS_FILE"
+rm -f "$BUILDSTATUS_FILE"
 echo "Finished"
