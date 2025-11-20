@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE=https://swi-prolog.org/
 TERMUX_PKG_DESCRIPTION="Most popular and complete prolog implementation"
 TERMUX_PKG_LICENSE="BSD 2-Clause"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="9.3.34"
+TERMUX_PKG_VERSION="9.3.35"
 TERMUX_PKG_SRCURL=https://www.swi-prolog.org/download/devel/src/swipl-${TERMUX_PKG_VERSION}.tar.gz
-TERMUX_PKG_SHA256=89d7c860dcf1261f0a4ae990faaa038168225fe11708252a9d09d45aac8ab583
+TERMUX_PKG_SHA256=8243a28ee35ee08ff786a3e9c9b92e2a339cc25d6817cbe3aa73c23cbcc60f01
 TERMUX_PKG_DEPENDS="libandroid-execinfo, libarchive, libcrypt, libdb, libedit, libgmp, libyaml, ncurses, openssl, ossp-uuid, pcre2, python, unixodbc, zlib"
 TERMUX_PKG_FORCE_CMAKE=true
 TERMUX_PKG_HOSTBUILD=true
@@ -12,6 +12,8 @@ TERMUX_PKG_AUTO_UPDATE=true
 
 # configure arguments that should only be applied to the target build, and never the hostbuild
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
+-DCMAKE_INSTALL_LIBDIR=$TERMUX__PREFIX__LIB_SUBDIR
+-DCMAKE_INSTALL_INCLUDEDIR=$TERMUX__PREFIX__INCLUDE_SUBDIR
 -DHAVE_WEAK_ATTRIBUTE_EXITCODE=0
 -DSWIPL_NATIVE_FRIEND=${TERMUX_PKG_HOSTBUILD_DIR}
 -DPOSIX_SHELL=${TERMUX_PREFIX}/bin/sh
