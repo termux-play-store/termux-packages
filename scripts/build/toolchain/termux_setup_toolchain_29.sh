@@ -215,10 +215,6 @@ termux_setup_toolchain_29() {
 		echo 'INPUT(-lunwind)' > $dir/libgcc.a
 	done
 
-	grep -lrw $_TERMUX_TOOLCHAIN_TMPDIR/sysroot/usr/include/c++/v1 -e '<version>' | xargs -n 1 sed -i 's/<version>/\"version\"/g'
-
-	# Make toolchain read-only to avoid build scripts modifying it (breaks tinygo)
-	# chmod -R u-w $_TERMUX_TOOLCHAIN_TMPDIR
-
+	grep -lrw $_TERMUX_TOOLCHAIN_TMPDIR/sysroot/usr/include/c++/v1 -e 'include <version>' | xargs -n 1 sed -i 's/include <version>/include \"version\"/g'
 	mv $_TERMUX_TOOLCHAIN_TMPDIR $TERMUX_STANDALONE_TOOLCHAIN
 }

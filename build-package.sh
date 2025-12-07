@@ -584,24 +584,10 @@ fi
 if [[ "${TERMUX_INSTALL_DEPS-false}" = "true" || "${TERMUX_PACKAGE_LIBRARY-bionic}" = "glibc" ]]; then
 	# Setup PGP keys for verifying integrity of dependencies.
 	# Keys are obtained from our keyring package.
-<<<<<<< HEAD
 	FINGERPRINT=$(gpg --with-colons --show-keys $TERMUX_SCRIPTDIR/packages/termux-keyring/termux-packages.gpg | awk -F':' '$1=="fpr"{print $10}')
 	gpg --list-keys $FINGERPRINT > /dev/null 2>&1 || {
 		gpg --import "$TERMUX_SCRIPTDIR/packages/termux-keyring/termux-packages.gpg"
 		gpg --no-tty --command-file <(echo -e "trust\n5\ny")  --edit-key $FINGERPRINT
-=======
-	gpg --list-keys 2C7F29AE97891F6419A9E2CDB0076E490B71616B > /dev/null 2>&1 || {
-		gpg --import "$TERMUX_SCRIPTDIR/packages/termux-keyring/grimler.gpg"
-		gpg --no-tty --command-file <(echo -e "trust\n5\ny") --edit-key 2C7F29AE97891F6419A9E2CDB0076E490B71616B
-	}
-	gpg --list-keys CC72CF8BA7DBFA0182877D045A897D96E57CF20C > /dev/null 2>&1 || {
-		gpg --import "$TERMUX_SCRIPTDIR/packages/termux-keyring/termux-autobuilds.gpg"
-		gpg --no-tty --command-file <(echo -e "trust\n5\ny") --edit-key CC72CF8BA7DBFA0182877D045A897D96E57CF20C
-	}
-	gpg --list-keys 998DE27318E867EA976BA877389CEED64573DFCA > /dev/null 2>&1 || {
-		gpg --import "$TERMUX_SCRIPTDIR/packages/termux-keyring/termux-pacman.gpg"
-		gpg --no-tty --command-file <(echo -e "trust\n5\ny") --edit-key 998DE27318E867EA976BA877389CEED64573DFCA
->>>>>>> upstream/master
 	}
 fi
 
@@ -618,28 +604,8 @@ for (( i=0; i < ${#PACKAGE_LIST[@]}; i++ )); do
 		fi
 
 		# Handle 'all' arch:
-<<<<<<< HEAD
 		if [ "$TERMUX_ON_DEVICE_BUILD" = "false" ] && [ -n "${TERMUX_ARCH+x}" ] && [ "${TERMUX_ARCH}" = 'all' ]; then
 			for arch in 'aarch64' 'arm' 'x86_64'; do
-=======
-		if [[ "$TERMUX_ON_DEVICE_BUILD" == "false" && -n "${TERMUX_ARCH+x}" && "${TERMUX_ARCH}" == 'all' ]]; then
-			_SELF_ARGS=()
-			[[ "${TERMUX_CLEANUP_BUILT_PACKAGES_ON_LOW_DISK_SPACE:-}" == "true" ]] && _SELF_ARGS+=("-C")
-			[[ "${TERMUX_DEBUG_BUILD:-}" == "true" ]] && _SELF_ARGS+=("-d")
-			[[ "${TERMUX_IS_DISABLED:-}" == "true" ]] && _SELF_ARGS+=("-D")
-			[[ "${TERMUX_FORCE_BUILD:-}" == "true" && "${TERMUX_FORCE_BUILD_DEPENDENCIES:-}" != "true" ]] && _SELF_ARGS+=("-f")
-			[[ "${TERMUX_FORCE_BUILD:-}" == "true" && "${TERMUX_FORCE_BUILD_DEPENDENCIES:-}" == "true" ]] && _SELF_ARGS+=("-F")
-			[[ "${TERMUX_INSTALL_DEPS:-}" == "true" && "${TERMUX_PKGS__BUILD__RM_ALL_PKGS_BUILT_MARKER_AND_INSTALL_FILES:-}" != "false" ]] && _SELF_ARGS+=("-i")
-			[[ "${TERMUX_INSTALL_DEPS:-}" == "true" && "${TERMUX_PKGS__BUILD__RM_ALL_PKGS_BUILT_MARKER_AND_INSTALL_FILES:-}" == "false" ]] && _SELF_ARGS+=("-I")
-			[[ "${TERMUX_GLOBAL_LIBRARY:-}" == "true" ]] && _SELF_ARGS+=("-L")
-			[[ -n "${TERMUX_OUTPUT_DIR:-}" ]] && _SELF_ARGS+=("-o" "$TERMUX_OUTPUT_DIR")
-			[[ "${TERMUX_PKGS__BUILD__RM_ALL_PKG_BUILD_DEPENDENT_DIRS:-}" == "true" ]] && _SELF_ARGS+=("-r")
-			[[ "${TERMUX_WITHOUT_DEPVERSION_BINDING:-}" == "true" ]] && _SELF_ARGS+=("-w")
-			[[ -n "${TERMUX_PACKAGE_FORMAT:-}" ]] && _SELF_ARGS+=("--format" "$TERMUX_PACKAGE_FORMAT")
-			[[ -n "${TERMUX_PACKAGE_LIBRARY:-}" ]] && _SELF_ARGS+=("--library" "$TERMUX_PACKAGE_LIBRARY")
-
-			for arch in 'aarch64' 'arm' 'i686' 'x86_64'; do
->>>>>>> upstream/master
 				env TERMUX_ARCH="$arch" TERMUX_BUILD_IGNORE_LOCK=true ./build-package.sh \
 					"${_SELF_ARGS[@]}" "${PACKAGE_LIST[i]}"
 			done
@@ -737,7 +703,6 @@ for (( i=0; i < ${#PACKAGE_LIST[@]}; i++ )); do
 			export PATH="/usr/bin:$PATH"
 		fi
 		cd "$TERMUX_PKG_MASSAGEDIR"
-<<<<<<< HEAD
 		if [ "$TERMUX_PACKAGE_FORMAT" = "debian" ]; then
 			termux_step_create_debian_package
 		elif [ "$TERMUX_PACKAGE_FORMAT" = "pacman" ]; then
@@ -748,24 +713,3 @@ for (( i=0; i < ${#PACKAGE_LIST[@]}; i++ )); do
 		termux_step_finish_build
 	) 5< "$TERMUX_BUILD_LOCK_FILE"
 done
-=======
-		case "$TERMUX_PACKAGE_FORMAT" in
-			debian) termux_step_create_debian_package;;
-			pacman) termux_step_create_pacman_package;;
-			*) termux_error_exit "Unknown package format '$TERMUX_PACKAGE_FORMAT'.";;
-		esac
-		# Save a list of compiled packages for further work with it
-		if termux_check_package_in_building_packages_list "${TERMUX_PKG_BUILDER_DIR#"${TERMUX_SCRIPTDIR}/"}"; then
-			sed -i "\|^${TERMUX_PKG_BUILDER_DIR#"${TERMUX_SCRIPTDIR}/"}$|d" "$TERMUX_BUILD_PACKAGE_CALL_BUILDING_PACKAGES_LIST_FILE_PATH"
-		fi
-		termux_add_package_to_built_packages_list "$TERMUX_PKG_NAME"
-		termux_step_finish_build
-	) 5< "$TERMUX_BUILD_LOCK_FILE"
-done
-
-# Removing a file to store a list of compiled packages
-if (( ! TERMUX_BUILD_PACKAGE_CALL_DEPTH )); then
-	rm "$TERMUX_BUILD_PACKAGE_CALL_BUILT_PACKAGES_LIST_FILE_PATH"
-	rm "$TERMUX_BUILD_PACKAGE_CALL_BUILDING_PACKAGES_LIST_FILE_PATH"
-fi
->>>>>>> upstream/master
