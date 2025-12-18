@@ -8,8 +8,7 @@ TERMUX_PKG_SRCURL=https://dlcdn.apache.org/orc/orc-${TERMUX_PKG_VERSION}/orc-${T
 TERMUX_PKG_SHA256=52fc762332442e8b05d7182f8c035f9e04d945b9a52be22ab69f28b3f37d4500
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_UPDATE_METHOD=repology
-TERMUX_PKG_DEPENDS="libc++, liblz4, protobuf, libsnappy, zlib, zstd"
-TERMUX_PKG_BUILD_DEPENDS="protobuf-dev"
+TERMUX_PKG_DEPENDS="libc++, liblz4, libprotobuf, libsnappy, zlib, zstd"
 # cmake options are copied from https://github.com/apache/arrow/blob/main/cpp/cmake_modules/ThirdpartyToolchain.cmake
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
 -DBUILD_CPP_TESTS=OFF
