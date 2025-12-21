@@ -7,10 +7,11 @@
  
  #include "fb.h"
  #include "pixmapstr.h"
-@@ -93,6 +94,46 @@
+@@ -93,6 +94,48 @@
      return os_move_fd(fd);
  }
  
++#if defined(__ANDROID__) && !defined(HAVE_MEMFD_CREATE)
 +#define HAVE_MEMFD_CREATE
 +static inline int memfd_create(const char *name, unsigned int flags) {
 +#ifndef __NR_memfd_create
@@ -31,6 +32,7 @@
 +       return -1;
 +#endif
 +}
++#endif
 +
 +static inline int ashmem_create_region(off_t size) {
 +    int ret, flags, fd = open("/dev/ashmem", O_RDWR | O_CLOEXEC);

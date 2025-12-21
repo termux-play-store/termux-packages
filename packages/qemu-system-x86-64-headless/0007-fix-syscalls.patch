@@ -52,11 +52,12 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
  #include <linux/termios.h>
  #include <linux/unistd.h>
  #include <linux/cdrom.h>
-@@ -285,6 +290,59 @@
+@@ -285,6 +290,66 @@
  #define __NR__llseek __NR_lseek
  #endif
  
 +_syscall0(int, vhangup)
++#if __ANDROID_API__ < 26
 +#ifdef __NR_msgctl
 +_syscall3(int, msgctl, int, msqid, int, cmd, struct msqid_ds *, buf)
 +#else
@@ -65,6 +66,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 +{
 +    return syscall (__NR_ipc, IPCOP_msgctl, msqid, cmd | 0x100, 0, buf);
 +}
++#endif
 +#endif
 +
 +#ifdef __NR_semget
@@ -77,7 +79,11 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 +}
 +#endif
 +
++#if __ANDROID_API__ < 26
 +_syscall2(int, setdomainname, const char *, name, size_t, len)
++#endif
++
++#if __ANDROID_API__ < 26
 +#ifdef __NR_msgget
 +_syscall2(int, msgget, key_t, key, int, msgflg)
 +#else
@@ -86,6 +92,7 @@ diff -uNr qemu-8.2.0/linux-user/syscall.c qemu-8.2.0.mod/linux-user/syscall.c
 +{
 +    return syscall(__NR_ipc, 5, IPCOP_msgget, key, msgflg, 0, NULL);
 +}
++#endif
 +#endif
 +
 +#ifdef _NSIG_WORDS
