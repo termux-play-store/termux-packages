@@ -1,6 +1,6 @@
 --- a/src/3rdparty/chromium/third_party/crashpad/crashpad/util/posix/spawn_subprocess.cc
 +++ b/src/3rdparty/chromium/third_party/crashpad/crashpad/util/posix/spawn_subprocess.cc
-@@ -15,12 +15,15 @@
+@@ -15,12 +15,17 @@
  #include "util/posix/spawn_subprocess.h"
  
  #include <errno.h>
@@ -10,8 +10,10 @@
  #include <sys/wait.h>
  #include <unistd.h>
  
-+#ifndef __TERMUX__
++#ifdef __TERMUX__
++#if __ANDROID_API__ > 28
 +#include <spawn.h>
++#endif
 +#endif
 +
  #include "base/check.h"

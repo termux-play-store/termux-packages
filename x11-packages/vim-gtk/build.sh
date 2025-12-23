@@ -10,9 +10,9 @@ TERMUX_PKG_CONFLICTS="vim"
 TERMUX_PKG_BREAKS="vim-python"
 TERMUX_PKG_REPLACES="vim-python"
 TERMUX_PKG_PROVIDES="vim-python"
-TERMUX_PKG_VERSION="9.1.1950"
+TERMUX_PKG_VERSION="9.1.2000"
 TERMUX_PKG_SRCURL="https://github.com/vim/vim/archive/v${TERMUX_PKG_VERSION}.tar.gz"
-TERMUX_PKG_SHA256=fca27c4cbb9e265611a89c5d6e8d76e93845ea1a9ba39ba5a589a2ba7e973e7b
+TERMUX_PKG_SHA256=fce301c7d6b2fb703a5ecc891f1c1131e32b74f983a5825c69a3426a81ae8975
 TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_CONFFILES="share/vim/vimrc"
 TERMUX_PKG_EXTRA_CONFIGURE_ARGS="
@@ -55,28 +55,30 @@ share/vim/vim91/spell/en.ascii*
 share/vim/vim91/print
 share/vim/vim91/tools
 "
-
-# Vim releases every commit as a new patch release.
-# To avoid auto update spam, we only update Vim every 50th patch.
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_UPDATE_VERSION_REGEXP='\d+\.\d+\.\d\d[05]0'
+TERMUX_PKG_UPDATE_TAG_TYPE="newest-tag" # Vim doesn't use release tags
 
 termux_pkg_auto_update() {
 	# This auto_update function is shared by `vim` and `vim-gtk`
 	# If you make changes to one of them,
 	# remember to apply that change to the other as well.
-	local release
-	release="$(git ls-remote --tags https://github.com/vim/vim.git \
-	| grep -oP "refs/tags/v\K${TERMUX_PKG_UPDATE_VERSION_REGEXP}$" \
-	| sort -V \
-	| tail -n1)"
+	local latest_tag current_patch latest_patch
+	latest_tag="$(termux_github_api_get_tag)"
+	latest_patch="${latest_tag##*.}"
+	current_patch="${TERMUX_PKG_VERSION##*.}"
 
-	if [[ "${release}" == "${TERMUX_PKG_VERSION}" ]]; then
-		echo "INFO: No update needed. Already at version '${TERMUX_PKG_VERSION}'."
+	# Vim releases nearly every commit as a new tag.
+	# To avoid auto update spam, we only update Vim every 50th patch.
+	# To do that, floor each version to the last 50th.
+	(( current_patch -= current_patch % 50 ))
+	((  latest_patch -=  latest_patch % 50 ))
+
+	if (( current_patch == latest_patch )); then
+		echo "INFO: Skipping ${latest_tag#v}, no new 50th patch since $TERMUX_PKG_VERSION."
 		return
 	fi
 
-	termux_pkg_upgrade_version "${release}"
+	termux_pkg_upgrade_version "${latest_tag%.*}.${latest_patch}"
 }
 
 termux_step_pre_configure() {

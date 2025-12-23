@@ -6,5 +6,4 @@ TERMUX_PKG_VERSION="3.7.5"
 TERMUX_PKG_SRCURL=https://github.com/libfuse/sshfs/archive/refs/tags/sshfs-${TERMUX_PKG_VERSION}.tar.gz
 TERMUX_PKG_SHA256=99d294101f1b8997653a84c35674c2e50c18323ea2c449412c0ed46b9d31ac35
 TERMUX_PKG_AUTO_UPDATE=true
-TERMUX_PKG_UPDATE_VERSION_SED_REGEXP='s/.*-//'
 TERMUX_PKG_DEPENDS="libfuse3, glib, openssh | dropbear"
