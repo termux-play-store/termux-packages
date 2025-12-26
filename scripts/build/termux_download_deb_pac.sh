@@ -43,5 +43,5 @@ termux_download_deb_pac() {
 
 # Make script standalone executable as well as sourceable
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-	termux_download "$@"
+	termux_download_deb_pac "$@"
 fi
