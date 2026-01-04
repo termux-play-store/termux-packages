@@ -425,7 +425,7 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 	touch "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/available"
 	touch "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/status"
 
-	# Setup nano postinst (result of update-alternatives --install $TERMUX_PREFIX/bin/editor editor $TERMUX_PREFIX/bin/nano 20):
+	# Setup nano alternative:
 	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/alternatives/" \
 		 "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/bin/" \
 		 "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/alternatives/"
@@ -434,9 +434,27 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 	cat << EOF > "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/alternatives/editor"
 auto
 ${TERMUX_PREFIX}/bin/editor
+editor.1.gz
+${TERMUX_PREFIX}/share/man/man1/editor.1.gz
 
 ${TERMUX_PREFIX}/bin/nano
-20
+50
+${TERMUX_PREFIX}/share/man/man1/nano.1.gz
+
+EOF
+
+	# Setup less alternative:
+	ln -s "${TERMUX_PREFIX}/bin/less" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/alternatives/pager"
+	ln -s "${TERMUX_PREFIX}/etc/alternatives/pager" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/bin/pager"
+	cat << EOF > "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/alternatives/pager"
+auto
+${TERMUX_PREFIX}/bin/pager
+pager.1.gz
+${TERMUX_PREFIX}/share/man/man1/pager.1.gz
+
+${TERMUX_PREFIX}/bin/less
+50
+${TERMUX_PREFIX}/share/man/man1/less.1.gz
 
 EOF
 
