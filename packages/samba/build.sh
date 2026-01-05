@@ -3,6 +3,7 @@ TERMUX_PKG_DESCRIPTION="SMB/CIFS fileserver"
 TERMUX_PKG_LICENSE="GPL-3.0"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION=4.20.8
+TERMUX_PKG_REVISION=1
 TERMUX_PKG_SRCURL=https://download.samba.org/pub/samba/samba-${TERMUX_PKG_VERSION}.tar.gz
 TERMUX_PKG_SHA256=75be0e8d31f45013e9b260fe7cf304a36d2d8128391914772577215ec173a807
 TERMUX_PKG_DEPENDS="krb5, libandroid-execinfo, libbsd, libcap, libcrypt, libgnutls, libicu, libpopt, libtalloc, libtasn1, libtirpc, ncurses, openssl, readline, tdb-tools, zlib"
