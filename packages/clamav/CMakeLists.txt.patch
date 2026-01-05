@@ -1,6 +1,5 @@
-diff -u -r ../clamav-1.3.1/CMakeLists.txt ./CMakeLists.txt
---- ../clamav-1.3.1/CMakeLists.txt	2024-04-16 23:55:29.000000000 +0000
-+++ ./CMakeLists.txt	2024-05-20 13:26:29.288962988 +0000
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -57,7 +57,7 @@
  #
  # Define C_LINUX and C_BSD because CMake only defines UNIX, APPLE, WIN32, MSVC
@@ -10,24 +9,3 @@ diff -u -r ../clamav-1.3.1/CMakeLists.txt ./CMakeLists.txt
      set(C_LINUX 1)
  elseif(APPLE OR CMAKE_SYSTEM_NAME MATCHES "BSD")
      set(C_BSD 1)
-@@ -491,7 +491,8 @@
- 
- # libclamav feature dependencies
- if(NOT WIN32)
--    find_package(Iconv REQUIRED)
-+    # Termux: iconv is built into libc
-+    # find_package(Iconv REQUIRED)
-     # Set variable required by libclamav to use iconv
-     set(HAVE_ICONV 1)
- endif()
-@@ -1226,10 +1227,6 @@
- ${o}            no              ${e}")
- endif()
- if(NOT WIN32)
--message("\
--${b}        Locale support:     ${e}
--${_}            iconv           ${e}${Iconv_INCLUDE_DIRS}
--${_}                            ${e}${Iconv_LIBRARIES}")
- endif()
- 
- if(NOT ENABLE_LIBCLAMAV_ONLY)
