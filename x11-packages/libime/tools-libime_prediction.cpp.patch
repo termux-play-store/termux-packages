@@ -1,0 +1,15 @@
+diff -u -r ../cache/tmp-checkout/tools/libime_prediction.cpp ./tools/libime_prediction.cpp
+--- ../cache/tmp-checkout/tools/libime_prediction.cpp	2026-01-07 15:41:57.463929430 +0000
++++ ./tools/libime_prediction.cpp	2026-01-10 20:43:54.796409950 +0000
+@@ -112,8 +112,9 @@
+         }
+     }
+ 
+-    FCITX_LOG(Info) << "Memory: " << trie.mem_size()
+-                    << " Number of entries: " << trie.size();
++    // XXX: The below lines causes a crash under termux-proot-run:
++    // FCITX_LOG(Info) << "Memory: " << trie.mem_size()
++    //               << " Number of entries: " << trie.size();
+ 
+     std::ofstream fout;
+     std::ostream *out;
