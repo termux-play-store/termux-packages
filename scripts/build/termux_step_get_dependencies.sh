@@ -72,6 +72,16 @@ termux_step_get_dependencies() {
 			tar -xf data.tar.xz --no-overwrite-dir -C /
 		fi
 	done
+
+	for lib in complex-math glob spawn support utimes; do
+		# Make "-landroid-*" work when building for compatibility.
+		if [ -L "$TERMUX_PREFIX/lib/libandroid-${lib}.so" ]; then
+			rm "$TERMUX_PREFIX/lib/libandroid-${lib}.so"
+			echo "" > "$TERMUX_PREFIX/lib/libandroid-${lib}.so"
+			# Avoid the file being included in the package:
+			touch -d "2 hours ago" "$TERMUX_PREFIX/lib/libandroid-${lib}.so"
+		fi
+	done
 }
 
 termux_run_build-package() {
