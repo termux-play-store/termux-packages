@@ -418,6 +418,7 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 
 	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/apt/apt.conf.d"
 	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/apt/preferences.d"
+	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/share/man/man1"
 	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/info"
 	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/triggers"
 	mkdir -p "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/updates"
@@ -431,6 +432,8 @@ for package_arch in "${TERMUX_ARCHITECTURES[@]}"; do
 		 "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/alternatives/"
 	ln -s "${TERMUX_PREFIX}/bin/nano" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/alternatives/editor"
 	ln -s "${TERMUX_PREFIX}/etc/alternatives/editor" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/bin/editor"
+	ln -s "${TERMUX_PREFIX}/share/man/man1/nano.1.gz" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/alternatives/editor.1.gz"
+	ln -s "${TERMUX_PREFIX}/etc/alternatives/editor.1.gz" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/share/man/man1/editor.1.gz"
 	cat << EOF > "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/alternatives/editor"
 auto
 ${TERMUX_PREFIX}/bin/editor
@@ -446,6 +449,8 @@ EOF
 	# Setup less alternative:
 	ln -s "${TERMUX_PREFIX}/bin/less" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/alternatives/pager"
 	ln -s "${TERMUX_PREFIX}/etc/alternatives/pager" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/bin/pager"
+	ln -s "${TERMUX_PREFIX}/share/man/man1/less.1.gz" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/etc/alternatives/pager.1.gz"
+	ln -s "${TERMUX_PREFIX}/etc/alternatives/pager.1.gz" "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/share/man/man1/pager.1.gz"
 	cat << EOF > "${BOOTSTRAP_ROOTFS}/${TERMUX_PREFIX}/var/lib/dpkg/alternatives/pager"
 auto
 ${TERMUX_PREFIX}/bin/pager
