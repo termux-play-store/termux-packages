@@ -83,7 +83,7 @@ termux_step_create_python_debscripts() {
 
 		cat <<-POSTINST_EOF >>postinst
 			echo "Installing dependencies for ${_package_name} through pip..."
-			LD_PRELOAD='' LDFLAGS="-lpython$TERMUX_PYTHON_VERSION" MATHLIB="m" "${TERMUX_PREFIX}/bin/pip3" install ${upgrade_flag} ${_package_python_deps}
+			LDFLAGS="-lpython$TERMUX_PYTHON_VERSION" MATHLIB="m" "${TERMUX_PREFIX}/bin/pip3" install ${upgrade_flag} ${_package_python_deps}
 		POSTINST_EOF
 
 		# ensure that pip is added as a dependency to all
@@ -103,7 +103,7 @@ termux_step_create_python_debscripts() {
 	# post-inst script to generate *.pyc files
 	cat <<-POSTINST_EOF >>postinst
 		if [ -f "${TERMUX_PREFIX}/bin/py3compile" ]; then
-			LD_PRELOAD='' "${TERMUX_PREFIX}/bin/py3compile" -p "$_package_name" "${TERMUX_PREFIX}/lib/python${TERMUX_PYTHON_VERSION}/"
+			"${TERMUX_PREFIX}/bin/py3compile" -p "$_package_name" "${TERMUX_PREFIX}/lib/python${TERMUX_PYTHON_VERSION}/"
 		fi
 	POSTINST_EOF
 
@@ -139,7 +139,7 @@ termux_step_create_python_debscripts() {
 	# pre-rm script to cleanup runtime-generated files.
 	cat <<-PRERM_EOF >>prerm
 		if [ -f "${TERMUX_PREFIX}/bin/py3clean" ]; then
-			LD_PRELOAD='' "${TERMUX_PREFIX}/bin/py3clean" -p "$_package_name"
+			"${TERMUX_PREFIX}/bin/py3clean" -p "$_package_name"
 		fi
 	PRERM_EOF
 

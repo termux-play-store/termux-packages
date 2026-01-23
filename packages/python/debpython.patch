@@ -15,24 +15,13 @@ diff --git a/debpython/debpython/files.py b/debpython/debpython/files.py
 index 39ef978..5899a7a 100644
 --- a/debpython/debpython/files.py
 +++ b/debpython/debpython/files.py
-@@ -48,7 +48,20 @@ def from_package(package_name, extensions=('.py',)):
+@@ -48,7 +48,9 @@ def from_package(package_name, extensions=('.py',)):
      extensions = tuple(extensions)  # .endswith doesn't like list
      env = environ.copy()
      env["LC_ALL"] = "C.UTF-8"
 -    process = Popen(('/usr/bin/dpkg', '-L', package_name), stdout=PIPE,
-+    env["LD_PRELOAD"] = ""
-+    process = Popen(['@TERMUX_PREFIX@/bin/bash', '-c',
-+        'source @TERMUX_PREFIX_CLASSICAL@/bin/termux-setup-package-manager && echo ${TERMUX_APP_PACKAGE_MANAGER}'],
-+        stdout=PIPE)
-+    termux_app_package_manager = process.communicate()[0].decode()[0:-1]
-+    if termux_app_package_manager == "apt":
-+        package_manager = "@TERMUX_PREFIX_CLASSICAL@/bin/dpkg"
-+        package_manager_list_argument = "-L"
-+    elif termux_app_package_manager == "pacman":
-+        package_manager = "@TERMUX_PREFIX_CLASSICAL@/bin/pacman"
-+        package_manager_list_argument = "-Qql"
-+    else:
-+        raise Exception(f"cannot determine system package manager ({termux_app_package_manager})!")
++    package_manager = "@TERMUX_PREFIX_CLASSICAL@/bin/dpkg"
++    package_manager_list_argument = "-L"
 +    process = Popen((package_manager, package_manager_list_argument, package_name), stdout=PIPE,
                           stderr=PIPE, env=env)
      stdout, stderr = process.communicate()
