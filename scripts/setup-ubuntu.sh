@@ -299,6 +299,9 @@ PACKAGES+=" libxkbfile-dev"
 PACKAGES+=" libsecret-1-dev"
 PACKAGES+=" libkrb5-dev"
 
+# Required by aosp-libs
+PACKAGES+=" openssh-client"
+
 # Required by wine-stable
 PACKAGES+=" libfreetype-dev:i386"
 
