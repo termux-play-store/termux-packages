@@ -367,11 +367,8 @@ $SUDO chown -R "$(whoami)" "${TERMUX_APP__DATA_DIR%"${TERMUX_APP__DATA_DIR#/*/}"
 # Initial symbolic link in the symbolic link chain for packages
 # that have a build dependency on 'aosp-libs'; see scripts/build/termux_step_override_config_scripts.sh
 # and scripts/build/setup/termux_setup_proot.sh for more information
-$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp" /system
-$SUDO mkdir -p /apex/com.android.runtime/{lib,lib64}
-$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp/bin/bootstrap" /apex/com.android.runtime/bin
-$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp/lib/bootstrap" /apex/com.android.runtime/lib/bionic
-$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp/lib64/bootstrap" /apex/com.android.runtime/lib64/bionic
+$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp/system" /system
+$SUDO ln -sf "$TERMUX_APP__DATA_DIR/aosp/apex" /apex
 
 # Install newer pkg-config then what ubuntu provides, as the stock
 # ubuntu version has performance problems with at least protobuf:
