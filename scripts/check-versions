@@ -84,9 +84,16 @@ for arch in supported_arches:
                     ):
                         if current_is_static:
                             current_package += "-static"
-                        print(
-                            f"{package_to_report} {arch} Version mismatch - local={local_version}, remote={remote_version} (from {current_package})"
-                        )
+                        deb_to_build = f"{current_package}_{local_version}_{arch}.deb"
+                        if os.path.exists(f"output/{deb_to_build}"):
+                            print(
+                                f"{package_to_report} {arch} Already built - output/{deb_to_build}"
+                            )
+                        else:
+                            print(
+                                f"{package_to_report} {arch} Version mismatch - local={local_version}, remote={remote_version} (from {current_package})"
+                            )
+
                         reported_packages.add(package_to_report)
 
     if name_to_local_version:
