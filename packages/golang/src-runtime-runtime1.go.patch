@@ -1,26 +1,12 @@
 diff -u -r ../go/src/runtime/runtime1.go ./src/runtime/runtime1.go
 --- ../go/src/runtime/runtime1.go	2024-05-01 19:49:47.000000000 +0000
 +++ ./src/runtime/runtime1.go	2024-06-03 19:49:01.863556548 +0000
-@@ -5,6 +5,7 @@
- package runtime
- 
- import (
-+	"cgocfg"
- 	"internal/bytealg"
- 	"internal/goarch"
- 	"runtime/internal/atomic"
-@@ -69,13 +70,33 @@
+@@ -69,13 +70,27 @@
  	sysargs(c, v)
  }
  
 +func AndroidSelfExecutable() string {
-+	var offset int32
-+	if cgocfg.Enabled {
-+		offset = 0
-+	} else {
-+		offset = 1
-+	}
-+	return gostringnocopy(argv_index(argv, offset))
++	return gostringnocopy(argv_index(argv, 1))
 +}
 +
  func goargs() {
@@ -31,7 +17,7 @@ diff -u -r ../go/src/runtime/runtime1.go ./src/runtime/runtime1.go
 -	for i := int32(0); i < argc; i++ {
 -		argslice[i] = gostringnocopy(argv_index(argv, i))
 +	var adjust int32
-+	if GOOS == "android" && !cgocfg.Enabled {
++	if GOOS == "android" {
 +		adjust = 1
 +	} else {
 +		adjust = 0
