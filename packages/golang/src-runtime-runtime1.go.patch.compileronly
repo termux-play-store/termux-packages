@@ -1,0 +1,26 @@
+diff -u -r ../cache/go/src/runtime/runtime1.go ./src/runtime/runtime1.go
+--- ../cache/go/src/runtime/runtime1.go	2026-01-08 21:56:04.000000000 +0000
++++ ./src/runtime/runtime1.go	2026-02-07 22:26:22.879784663 +0000
+@@ -74,9 +78,19 @@
+ 	if GOOS == "windows" {
+ 		return
+ 	}
+-	argslice = make([]string, argc)
+-	for i := int32(0); i < argc; i++ {
+-		argslice[i] = gostringnocopy(argv_index(argv, i))
++	var adjust int32
++	if GOOS == "android" {
++		adjust = 1
++	} else {
++		adjust = 0
++	}
++	argslice = make([]string, argc - adjust)
++	for i := int32(0); i < argc - adjust; i++ {
++		idx := i
++		if i > 0 {
++			idx += adjust
++		}
++		argslice[i] = gostringnocopy(argv_index(argv, idx))
+ 	}
+ }
+

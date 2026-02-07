@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="Go programming language compiler"
 TERMUX_PKG_LICENSE="BSD 3-Clause"
 TERMUX_PKG_MAINTAINER="@termux"
 TERMUX_PKG_VERSION="3:1.25.6"
-TERMUX_PKG_REVISION=1
+TERMUX_PKG_REVISION=2
 TERMUX_PKG_SRCURL=https://go.dev/dl/go${TERMUX_PKG_VERSION#*:}.src.tar.gz
 TERMUX_PKG_SHA256=58cbf771e44d76de6f56d19e33b77d745a1e489340922875e46585b975c2b059
 TERMUX_PKG_DEPENDS="clang"
@@ -13,6 +13,7 @@ TERMUX_PKG_BUILD_IN_SRC=true
 TERMUX_PKG_NO_STATICSPLIT=true
 
 termux_step_make_install() {
+	patch -p1 < "$TERMUX_PKG_BUILDER_DIR"/src-runtime-runtime1.go.patch.compileronly
 	termux_setup_golang
 
 	TERMUX_GOLANG_DIRNAME="${GOOS}_$GOARCH"
