@@ -15,7 +15,7 @@ TERMUX_PKG_SHA256=(
 )
 TERMUX_PKG_DEPENDS="fontconfig, freetype, krb5, libandroid-spawn, libc++, libgmp, libgnutls, libxcb, libxcomposite, libxcursor, libxfixes, libxrender, opengl, pulseaudio, sdl2, vulkan-loader, xorg-xrandr"
 TERMUX_PKG_ANTI_BUILD_DEPENDS="vulkan-loader"
-TERMUX_PKG_BUILD_DEPENDS="libandroid-spawn-static, vulkan-loader-generic"
+TERMUX_PKG_BUILD_DEPENDS="vulkan-loader-generic"
 TERMUX_PKG_NO_STATICSPLIT=true
 TERMUX_PKG_AUTO_UPDATE=true
 TERMUX_PKG_UPDATE_TAG_TYPE="newest-tag"
