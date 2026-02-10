@@ -1,11 +1,12 @@
-diff -uNr apt-2.1.11/apt-private/private-download.cc apt-2.1.11.mod/apt-private/private-download.cc
---- apt-2.1.11/apt-private/private-download.cc	2020-10-21 12:53:18.000000000 +0300
-+++ apt-2.1.11.mod/apt-private/private-download.cc	2020-11-05 14:22:21.865355149 +0200
-@@ -126,7 +126,6 @@
+diff -u -r ../cache/apt-3.1.15/apt-private/private-download.cc ./apt-private/private-download.cc
+--- ../cache/apt-3.1.15/apt-private/private-download.cc	2026-01-31 16:55:33.000000000 +0000
++++ ./apt-private/private-download.cc	2026-02-07 23:04:26.853555916 +0000
+@@ -126,8 +126,6 @@
  									/*}}}*/
  bool CheckFreeSpaceBeforeDownload(std::string const &Dir, unsigned long long FetchBytes)/*{{{*/
  {
 -   uint32_t const RAMFS_MAGIC = 0x858458f6;
+-   uint32_t const TMPFS_MAGIC = 0x01021994;
     /* Check for enough free space, but only if we are actually going to
        download */
     if (_config->FindB("APT::Get::Print-URIs", false) == true ||
