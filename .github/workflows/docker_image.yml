@@ -9,8 +9,6 @@ on:
     - 'scripts/properties.sh'
     - 'scripts/setup-android-sdk.sh'
     - 'scripts/setup-ubuntu.sh'
-  schedule:
-    - cron:  '0 2 * * 0'
   workflow_dispatch:
 
 jobs:
@@ -23,10 +21,10 @@ jobs:
     steps:
     - name: Clone repository
       uses: actions/checkout@v6
+
     - name: Build
       run: |
-        cd ./scripts
-        docker build --tag termux-play-store/package-builder:latest .
+        docker build --tag termux-play-store/package-builder:latest scripts/
         docker tag termux-play-store/package-builder:latest ghcr.io/termux-play-store/package-builder:latest
     - name: Login to GHCR
       if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && github.repository == 'termux-play-store/termux-packages'
