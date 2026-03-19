@@ -18,7 +18,6 @@ termux_step_pre_configure() {
 		termux_setup_proot
 		patch -p1 -i "$TERMUX_PKG_BUILDER_DIR"/data-CMakeLists.txt.diff
 	fi
-	LDFLAGS+=" -lunwind"
 }
 
 termux_step_post_make_install() {
