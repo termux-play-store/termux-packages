@@ -2,9 +2,9 @@ TERMUX_PKG_HOMEPAGE="https://github.com/n-t-roff/sc"
 TERMUX_PKG_DESCRIPTION="A vi-like spreadsheet calculator"
 TERMUX_PKG_LICENSE="Public Domain"
 TERMUX_PKG_MAINTAINER="@termux"
-TERMUX_PKG_VERSION="7.16-1.1.4"
+TERMUX_PKG_VERSION="7.16-1.2.0"
 TERMUX_PKG_SRCURL=https://github.com/n-t-roff/sc/archive/refs/tags/${TERMUX_PKG_VERSION/-/_}.tar.gz
-TERMUX_PKG_SHA256=e7a3dbf20ee909437135bc5cc388d89c63a85a1dea9e683f4cc0c23d63f7e420
+TERMUX_PKG_SHA256=c53285a6a6f30d37e0bab21563e3e2c5c01ee62da63efeb2219029cde1c01ace
 TERMUX_PKG_DEPENDS="ncurses"
 TERMUX_PKG_BUILD_IN_SRC=true
 # n-t-roff-sc is a maintained fork of sc and thus replaces the original
