@@ -318,6 +318,9 @@ PACKAGES+=" patchelf"
 # Needed by lldb for python integration
 PACKAGES+=" swig"
 
+# Needed by nchat
+PACKAGES+=" libmagic-dev"
+
 # Needed by binutils-cross
 PACKAGES+=" libzstd-dev"
 

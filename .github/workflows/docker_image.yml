@@ -28,7 +28,7 @@ jobs:
         docker tag termux-play-store/package-builder:latest ghcr.io/termux-play-store/package-builder:latest
     - name: Login to GHCR
       if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && github.repository == 'termux-play-store/termux-packages'
-      uses: docker/login-action@v3
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
