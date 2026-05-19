@@ -59,12 +59,8 @@ termux_step_post_get_source() {
 }
 
 termux_step_pre_configure() {
-<<<<<<< HEAD
-	export EXPLICIT_VERSION=${TERMUX_PKG_VERSION#*:}
-=======
 	export EXPLICIT_VERSION="${TERMUX_PKG_VERSION#*:}"
 	export LDFLAGS+=" -landroid-glob"
->>>>>>> upstream/master
 	NO_CONFIGURE=1 ./autogen.sh
 }
 
